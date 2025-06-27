@@ -13,10 +13,53 @@ class OrcamentoController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
-        return view('orcamentos.index');
+        $dataInicio = $request->input('data_inicio');
+        $dataFim = $request->input('data_fim');
+        $produtoId = $request->input('produto_id');
+        $tipoVisao = $request->input('tipo_visao', 'orcamento');
+
+        $query = Orcamento::with(['produtos', 'cliente', 'vendedor']);
+
+        if ($dataInicio) {
+            $query->whereDate('created_at', '>=', $dataInicio);
+        }
+
+        if ($dataFim) {
+            $query->whereDate('created_at', '<=', $dataFim);
+        }
+
+        if ($produtoId) {
+            $query->whereHas('produtos', function ($subQuery) use ($produtoId) {
+                $subQuery->where('produto_id', $produtoId);
+            });
+        }
+
+        $orcamentos = $query->get();
+
+        if ($tipoVisao === 'produto' && $produtoId) {
+            foreach ($orcamentos as $orcamento) {
+                $orcamento->setRelation('produtos', $orcamento->produtos->filter(function ($p) use ($produtoId) {
+                    return $p->produto_id == $produtoId;
+                })->values());
+            }
+        }
+
+        $clientes = Pessoa::where('eh_cliente', 1)->get();
+        $vendedores = Pessoa::where('eh_vendedor', 1)->get();
+        $produtos = Produto::all();
+
+        return view('orcamentos.index', compact(
+            'orcamentos',
+            'clientes',
+            'vendedores',
+            'produtos',
+            'dataInicio',
+            'dataFim',
+            'produtoId',
+            'tipoVisao'
+        ));
     }
 
     /**
@@ -125,62 +168,5 @@ class OrcamentoController extends Controller
     public function destroy(string $id)
     {
         //
-    }
-    /**
-     * Relatório de orçamentos.
-     */
-
-    public function gerarRelatorio(Request $request)
-    {
-       $dataInicio = $request->input('data_inicio');
-    $dataFim = $request->input('data_fim');
-    $produtoId = $request->input('produto_id');
-    $tipoVisao = $request->input('tipo_visao', 'orcamento');
-
-    // Inicia a query com os relacionamentos necessários
-    $query = Orcamento::with(['produtos', 'cliente', 'vendedor']);
-
-    if ($dataInicio) {
-        $query->whereDate('created_at', '>=', $dataInicio);
-    }
-
-    if ($dataFim) {
-        $query->whereDate('created_at', '<=', $dataFim);
-    }
-
-    // Se um produto foi selecionado, filtramos orçamentos que o contenham
-    if ($produtoId) {
-        $query->whereHas('produtos', function ($subQuery) use ($produtoId) {
-            $subQuery->where('produto_id', $produtoId);
-        });
-    }
-
-    // Pegamos os orçamentos
-    $orcamentos = $query->get();
-
-    // Se o tipoVisao for "produto", filtramos os produtos DENTRO de cada orçamento
-    if ($tipoVisao === 'produto' && $produtoId) {
-        foreach ($orcamentos as $orcamento) {
-            // substitui a relação produtos apenas com o produto filtrado
-            $orcamento->setRelation('produtos', $orcamento->produtos->filter(function ($p) use ($produtoId) {
-                return $p->produto_id == $produtoId;
-            })->values());
-        }
-    }
-
-    $clientes = Pessoa::where('eh_cliente', 1)->get();
-    $vendedores = Pessoa::where('eh_vendedor', 1)->get();
-    $produtos = Produto::all();
-
-    return view('orcamentos.report', compact(
-        'orcamentos',
-        'clientes',
-        'vendedores',
-        'produtos',
-        'dataInicio',
-        'dataFim',
-        'produtoId',
-        'tipoVisao'
-    ));
     }
 }

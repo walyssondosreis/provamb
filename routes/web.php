@@ -15,4 +15,3 @@ Route::get('/ofertas/create',[OfertaController::class, 'create'])->name('ofertas
 Route::post('/ofertas',[OfertaController::class, 'store'])->name('ofertas.store');
 Route::get('/orcamentos/create',[OrcamentoController::class, 'create'])->name('orcamentos.create');
 Route::post('/orcamentos',[OrcamentoController::class, 'store'])->name('orcamentos.store');
-Route::get('/orcamentos/report',[OrcamentoController::class, 'gerarRelatorio'])->name('orcamentos.report');

@@ -1,92 +1,42 @@
-<!DOCTYPE html>
-<html lang="pt-br">
+@extends('layouts.app')
+@section('title', 'ProvaMB: Cadastrar Orçamento')
 
-<head>
-    <meta charset="UTF-8">
-    <title>Cadastrar Orçamento</title>
-
+@section('style')
     <style>
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 20px;
-        font-family: Arial, sans-serif;
-    }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-family: Arial, sans-serif;
+        }
 
-    th, td {
-        border: 1px solid #ddd;
-        padding: 8px 12px;
-        text-align: center;
-    }
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px 12px;
+            text-align: center;
+        }
 
-    th {
-        background-color: #f2f2f2;
-        font-weight: bold;
-    }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
 
-    tfoot tr td {
-        background-color: #f9f9f9;
-        font-weight: bold;
-    }
+        tfoot tr td {
+            background-color: #f9f9f9;
+            font-weight: bold;
+        }
 
-    tfoot tr td[colspan="4"],
-    tfoot tr td[colspan="2"] {
-        text-align: right;
-    }
+        tfoot tr td[colspan="4"],
+        tfoot tr td[colspan="2"] {
+            text-align: right;
+        }
+    </style>
 
-    .valor-destaque {
-        background-color: #e9ffe9;
-        color: #0a5d0a;
-        font-size: 1.1em;
-    }
+@endsection
+@section('content')
 
-    .total-geral {
-        background-color: #d9edf7;
-        color: #31708f;
-    }
-
-    .desconto {
-        background-color: #fff3cd;
-        color: #856404;
-    }
-
-    .remover-produto {
-        background-color: #ff4d4d;
-        color: white;
-        border: none;
-        padding: 5px 10px;
-        cursor: pointer;
-        border-radius: 4px;
-    }
-
-    .remover-produto:hover {
-        background-color: #cc0000;
-    }
-
-    button[type="button"] {
-        margin-top: 15px;
-        background-color: #007bff;
-        color: white;
-        padding: 8px 12px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-    }
-
-    button[type="button"]:hover {
-        background-color: #0056b3;
-    }
-</style>
-
-
-</head>
-
-<body>
     <h1>Cadastro de Orçamento</h1>
-
-    @if (session('success'))
-        <p style="color: green;">{{ session('success') }}</p>
-    @endif
 
     <form action="{{ route('orcamentos.store') }}" method="POST">
         @csrf
@@ -185,15 +135,13 @@
 
         {{-- Finaliza aqui --}}
 
-
-
         <button type="button" onclick="adicionarProduto()">+ Adicionar Produto</button>
 
         <br><br>
         <button type="submit">Concluir Venda</button>
         <a href="{{ route('orcamentos.index') }}">Salvar orçamento</a>
         <br>
-        <a href="{{ route('orcamentos.index') }}">Voltar ao menu</a>
+        <a href="{{ route('orcamentos.index') }}">Voltar</a>
     </form>
 
     <template id="produto-template">
@@ -227,21 +175,9 @@
 
         </tr>
     </template>
+@endsection
 
-
-    @php
-        // dd($produtosJS);
-        // foreach ($produtos as $prod) {
-        //     var_dump($prod->oferta->qtd_levar);
-        //     var_dump($prod->oferta->qtd_pagar);
-        // }
-    @endphp
-
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/i18n/pt-BR.js"></script>
-
+@section('scripts')
     <script>
         let index = 1; // Global
 
@@ -302,7 +238,7 @@
 
                 const produtoId = parseInt(tr.querySelector(`[name="produtos[${index}][produto_id]"]`).value);
                 const quantidade = parseInt(tr.querySelector(`[name="produtos[${index}][qtd_produto]"]`).value) ||
-                0;
+                    0;
                 const aplicaOferta = tr.querySelector(`[name="produtos[${index}][aplica_oferta]"]`).checked;
                 const produto = produtosData[produtoId];
 
@@ -393,11 +329,4 @@
 
         const produtosData = @json($produtosJS);
     </script>
-
-
-
-
-
-</body>
-
-</html>
+@endsection

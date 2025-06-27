@@ -1,15 +1,8 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>Cadastrar Produto</title>
-</head>
-<body>
-    <h1>Cadastro de Produto</h1>
+@extends('layouts.app')
+@section('title', 'ProvaMB: Cadastrar de Produto')
 
-    @if(session('success'))
-        <p style="color: green;">{{ session('success') }}</p>
-    @endif
+@section('content')
+    <h1>Cadastro de Produto</h1>
 
     <form action="{{ route('produtos.store') }}" method="POST">
         @csrf
@@ -24,7 +17,6 @@
         <input type="text" name="preco" id="preco" value="{{ old('preco') }}">
         <br><br>
         <button type="submit">Salvar</button>
-        <a href="{{ route('orcamentos.index') }}">Voltar ao menu</a>
+        <a href="{{ route('orcamentos.index') }}">Voltar</a>
     </form>
-</body>
-</html>
+@endsection
